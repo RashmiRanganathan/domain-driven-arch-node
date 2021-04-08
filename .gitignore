@@ -1,0 +1,10 @@
+node_modules
+dist/**
+coverage
+data
+.DS_Store
+.idea/
+.vscode
+.scannerwork*
+.history
+*.iml
