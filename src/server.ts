@@ -1,19 +1,32 @@
-import { Server, Request, ResponseToolkit } from "@hapi/hapi";
+import { Server } from "@hapi/hapi";
+import * as Inert from "@hapi/inert";
+import * as Vision from "@hapi/vision";
+import Swagger from "./plugins/swagger";
+import { connectMongo } from "./common/mongoDb";
+import { routes } from "./routes";
 
 const init = async () => {
   const server: Server = new Server({
     port: 3000,
     host: "localhost",
-  });
-
-  server.route({
-    method: "GET",
-    path: "/",
-    handler: (_request: Request, _h: ResponseToolkit) => {
-      return "Hello World!";
+    routes: {
+      validate: {
+        options: {
+          abortEarly: false,
+        },
+        failAction: (_request, _h, err) => {
+          throw err;
+        },
+      },
     },
   });
 
+  server.route(routes);
+
+  const plugins: any[] = [Inert, Vision, Swagger];
+  await server.register(plugins);
+
+  await connectMongo();
   await server.start();
   console.log("Server running on %s", server.info.uri);
 };
