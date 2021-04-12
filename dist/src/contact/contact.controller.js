@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const contact_service_1 = __importDefault(require("./contact.service"));
+const contact_validator_1 = require("./contact.validator");
 const createContact = {
     method: "POST",
     path: "/contacts",
@@ -20,9 +21,14 @@ const createContact = {
         description: "Create new contact",
         notes: "All information must valid",
         tags: ["api", "contacts"],
+        validate: {
+            payload: contact_validator_1.contactCreationInputValidator,
+        },
+        response: {
+            schema: contact_validator_1.contactCreationResultValidator,
+        },
         handler: (hapiRequest, hapiResponse) => __awaiter(void 0, void 0, void 0, function* () {
-            const contact = hapiRequest.payload;
-            const createContactResult = yield contact_service_1.default.create(contact);
+            const createContactResult = yield contact_service_1.default.create(hapiRequest.payload);
             return hapiResponse.response(createContactResult).code(201);
         }),
     },

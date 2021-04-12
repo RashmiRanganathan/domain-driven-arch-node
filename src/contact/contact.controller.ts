@@ -1,6 +1,10 @@
 import hapi, { Request } from "@hapi/hapi";
 import contactService from "./contact.service";
-import { Contact } from "./contact.type";
+import {
+  contactCreationInputValidator,
+  ContactCreationRequest,
+  contactCreationResultValidator,
+} from "./contact.validator";
 
 const createContact: hapi.ServerRoute = {
   method: "POST",
@@ -9,12 +13,20 @@ const createContact: hapi.ServerRoute = {
     description: "Create new contact",
     notes: "All information must valid",
     tags: ["api", "contacts"],
+    validate: {
+      payload: contactCreationInputValidator,
+    },
+    response: {
+      schema: contactCreationResultValidator,
+    },
+
     handler: async (
-      hapiRequest: Request,
+      hapiRequest: ContactCreationRequest,
       hapiResponse: hapi.ResponseToolkit
     ) => {
-      const contact = hapiRequest.payload as Contact;
-      const createContactResult = await contactService.create(contact);
+      const createContactResult = await contactService.create(
+        hapiRequest.payload
+      );
       return hapiResponse.response(createContactResult).code(201);
     },
   },
