@@ -1,47 +1,47 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ContactModel = exports.collectionName = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-exports.collectionName = "contacts";
+const contact_constant_1 = require("./contact.constant");
+exports.collectionName = 'contacts';
 const contactSchema = new mongoose_1.Schema({
-    id: {
+    contactId: {
         type: String,
         unique: true,
         required: true,
-        maxlength: 50,
+        maxlength: contact_constant_1.CONTACT_CONSTRAINT.contactId.maxLength
     },
     name: {
         type: String,
+        unique: true,
         required: true,
-        maxlength: 100,
+        maxlength: contact_constant_1.CONTACT_CONSTRAINT.name.maxLength
     },
-    phoneNumber: [
+    imageUrl: {
+        type: String,
+        maxLength: contact_constant_1.CONTACT_CONSTRAINT.imageUrl.maxLength
+    },
+    accounts: [
         {
-            type: Number,
-            required: true,
-            minlength: 10,
-            maxlength: 12,
-        },
-    ],
+            accountId: {
+                type: String,
+                unique: true,
+                required: true,
+                maxlength: contact_constant_1.CONTACT_CONSTRAINT.account.accountId.maxLength
+            },
+            identifier: {
+                type: String,
+                required: true,
+                maxLength: contact_constant_1.CONTACT_CONSTRAINT.account.identifier.maxLength
+            }
+        }
+    ]
 });
 exports.ContactModel = mongoose_1.default.model(exports.collectionName, contactSchema);
 //# sourceMappingURL=contact.model.js.map

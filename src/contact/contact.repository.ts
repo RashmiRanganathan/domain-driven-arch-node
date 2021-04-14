@@ -1,37 +1,49 @@
-import { Contact } from "./contact.type";
+import { ContactDocument, ContactModel } from './contact.model';
+import { Contact } from './contact.type';
+import { escapeRegExp } from 'lodash';
 
-// In-memory cache. Need to replace it with a database call.
-const contacts = new Map<string, Contact>();
+export const convertContactDocumentToContact = (
+  document: ContactDocument
+): Contact => document.toObject({ getters: true }) as Contact;
 
-const create = async (contact: Contact): Promise<Contact | undefined> => {
-  if (!contacts.has(contact.id)) {
-    const newContact = { ...contact };
-    contacts.set(contact.id, contact);
+const create = async (contact: Contact): Promise<Contact> => {
+  const document = await ContactModel.create(contact);
+  return convertContactDocumentToContact(document);
+};
 
-    return newContact;
+const getContacts = async (name?: string): Promise<Contact[]> => {
+  const orParams = [
+    {
+      name: {
+        $regex: escapeRegExp(name),
+        $options: 'i'
+      }
+    }
+  ];
+
+  const documentList =
+    orParams.length === 0
+      ? await ContactModel.find()
+      : await ContactModel.find()
+          .or(orParams)
+          .exec();
+  return documentList.map(convertContactDocumentToContact);
+};
+
+const getContactDetail = async (contactId: string): Promise<Contact | null> => {
+  try {
+    const document = await ContactModel.findOne({
+      contactId
+    });
+    if (document == null) {
+      return null;
+    }
+    return convertContactDocumentToContact(document);
+  } catch (error) {
+    throw error;
   }
-  return undefined;
 };
 
-const get = async (contactId: string): Promise<Contact | undefined> => {
-  if (contacts.has(contactId)) {
-    return contacts.get(contactId);
-  }
-  return undefined;
-};
+const ContactRepository = { create, getContactDetail, getContacts };
 
-const remove = async (contactId: string): Promise<Contact | undefined> => {
-  if (contacts.has(contactId)) {
-    const contact = contacts.get(contactId);
-    contacts.delete(contactId);
-    return contact;
-  }
-  return undefined;
-};
-
-const clear = async (): Promise<void> => {
-  contacts.clear();
-};
-
-const ContactRepository = { create, get, remove, clear };
 export default ContactRepository;

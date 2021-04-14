@@ -1,8 +1,8 @@
-import { connect } from "mongoose";
+import { connect } from 'mongoose';
 
-export const MONGO_DB_NAME = "Feb2021Workshop";
-export const MONGO_DB_User = "Feb2021Workshop";
-export const MONGO_DB_PASS = "ER9U3HeU0wV5917k";
+export const MONGO_DB_NAME = 'Feb2021Workshop';
+export const MONGO_DB_USER = 'Feb2021Workshop';
+export const MONGO_DB_PASS = 'ER9U3HeU0wV5917k';
 export const MONGO_HOSTS = `dkcuster.o6bij.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
 
 const getMongoUri = () => {
@@ -14,6 +14,6 @@ export const connectMongo = async () => {
   connect(dbUri, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
-    useCreateIndex: true,
+    useCreateIndex: true
   });
 };

@@ -1,30 +1,51 @@
-import Boom from "boom";
-import { Contact } from "./contact.type";
-import ContactRepository from "./contact.repository";
+import { v1 as uuidv1 } from 'uuid';
+import ContactRepository from './contact.repository';
+import { NewContact, Account, Contact } from './contact.type';
+import { AppError } from '../errors/AppError';
+import { ERROR_CODE } from '../common/errors';
 
-const create = async (contact: Contact): Promise<Contact> => {
-  const result = await ContactRepository.create(contact);
+const stripUnusedFields = (contact: Contact): Contact => {
+  const accounts = contact.accounts.map(account => ({
+    accountId: account.accountId,
+    identifier: account.identifier
+  }));
 
-  if (!result) {
-    throw Boom.badRequest(`Contact already exists: ${contact.id}`);
+  return {
+    contactId: contact.contactId,
+    name: contact.name,
+    imageUrl: contact.imageUrl,
+    accounts
+  };
+};
+
+const create = async (contact: NewContact): Promise<Contact> => {
+  const accountsWithId: Account[] = contact.accounts.map(account => ({
+    ...account,
+    accountId: uuidv1()
+  }));
+
+  const contactWithId: Contact = {
+    ...contact,
+    contactId: uuidv1(),
+    accounts: accountsWithId
+  };
+
+  const savedContact = await ContactRepository.create(contactWithId);
+  return stripUnusedFields(savedContact);
+};
+
+const getContacts = async (searchStr?: string): Promise<Contact[]> => {
+  const contactList = await ContactRepository.getContacts(searchStr);
+  return contactList.map(stripUnusedFields);
+};
+
+const getContactDetail = async (contactId: string): Promise<Contact> => {
+  const contact = await ContactRepository.getContactDetail(contactId);
+  if (contact == null) {
+    throw new AppError(ERROR_CODE.CONTACT_NOT_FOUND);
   }
-
-  return result;
+  return stripUnusedFields(contact);
 };
 
-const get = async (contactId: string): Promise<Contact> => {
-  const result = await ContactRepository.get(contactId);
-
-  if (!result) {
-    throw Boom.notFound();
-  }
-
-  return result;
-};
-
-const remove = async (contactId: string): Promise<void> => {
-  await ContactRepository.remove(contactId);
-};
-
-const contactService = { create, get, remove };
+const contactService = { create, getContacts, getContactDetail };
 export default contactService;

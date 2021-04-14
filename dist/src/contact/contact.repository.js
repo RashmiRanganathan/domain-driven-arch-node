@@ -9,33 +9,43 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// In-memory cache. Need to replace it with a database call.
-const contacts = new Map();
+const contact_model_1 = require("./contact.model");
+const lodash_1 = require("lodash");
+exports.convertContactDocumentToContact = (document) => document.toObject({ getters: true });
 const create = (contact) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!contacts.has(contact.id)) {
-        const newContact = Object.assign({}, contact);
-        contacts.set(contact.id, contact);
-        return newContact;
+    const document = yield contact_model_1.ContactModel.create(contact);
+    return exports.convertContactDocumentToContact(document);
+});
+const getContacts = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    const orParams = [
+        {
+            name: {
+                $regex: lodash_1.escapeRegExp(name),
+                $options: 'i'
+            }
+        }
+    ];
+    const documentList = orParams.length === 0
+        ? yield contact_model_1.ContactModel.find()
+        : yield contact_model_1.ContactModel.find()
+            .or(orParams)
+            .exec();
+    return documentList.map(exports.convertContactDocumentToContact);
+});
+const getContactDetail = (contactId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const document = yield contact_model_1.ContactModel.findOne({
+            contactId
+        });
+        if (document == null) {
+            return null;
+        }
+        return exports.convertContactDocumentToContact(document);
     }
-    return undefined;
-});
-const get = (contactId) => __awaiter(void 0, void 0, void 0, function* () {
-    if (contacts.has(contactId)) {
-        return contacts.get(contactId);
+    catch (error) {
+        throw error;
     }
-    return undefined;
 });
-const remove = (contactId) => __awaiter(void 0, void 0, void 0, function* () {
-    if (contacts.has(contactId)) {
-        const contact = contacts.get(contactId);
-        contacts.delete(contactId);
-        return contact;
-    }
-    return undefined;
-});
-const clear = () => __awaiter(void 0, void 0, void 0, function* () {
-    contacts.clear();
-});
-const ContactRepository = { create, get, remove, clear };
+const ContactRepository = { create, getContactDetail, getContacts };
 exports.default = ContactRepository;
 //# sourceMappingURL=contact.repository.js.map

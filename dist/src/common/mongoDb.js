@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectMongo = exports.MONGO_HOSTS = exports.MONGO_DB_PASS = exports.MONGO_DB_User = exports.MONGO_DB_NAME = void 0;
 const mongoose_1 = require("mongoose");
 exports.MONGO_DB_NAME = "Feb2021Workshop";
 exports.MONGO_DB_User = "Feb2021Workshop";

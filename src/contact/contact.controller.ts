@@ -1,25 +1,30 @@
-import hapi, { Request } from "@hapi/hapi";
-import contactService from "./contact.service";
+import hapi from '@hapi/hapi';
+import contactService from './contact.service';
 import {
   contactCreationInputValidator,
-  ContactCreationRequest,
   contactCreationResultValidator,
-} from "./contact.validator";
+  ContactCreationRequest,
+  contactListResultValidator,
+  contactGetResultValidator,
+  contactIdInputParamValidator,
+  contactListQueryValidator
+} from './contact.validator';
+import { StatusCode } from '../common/errors';
+import { IGetContactRequest, IContactListRequest } from './contact.type';
 
 const createContact: hapi.ServerRoute = {
-  method: "POST",
-  path: "/contacts",
+  method: 'POST',
+  path: '/contacts',
   options: {
-    description: "Create new contact",
-    notes: "All information must valid",
-    tags: ["api", "contacts"],
+    description: 'Create new contact',
+    notes: 'All information must valid',
+    tags: ['api', 'contacts'],
     validate: {
-      payload: contactCreationInputValidator,
+      payload: contactCreationInputValidator
     },
     response: {
-      schema: contactCreationResultValidator,
+      schema: contactCreationResultValidator
     },
-
     handler: async (
       hapiRequest: ContactCreationRequest,
       hapiResponse: hapi.ResponseToolkit
@@ -27,49 +32,78 @@ const createContact: hapi.ServerRoute = {
       const createContactResult = await contactService.create(
         hapiRequest.payload
       );
-      return hapiResponse.response(createContactResult).code(201);
-    },
-  },
+      return hapiResponse
+        .response(createContactResult)
+        .code(StatusCode.CREATED);
+    }
+  }
 };
 
-const getContact: hapi.ServerRoute = {
-  method: "GET",
-  path: "/contacts/{id}",
+const listContact: hapi.ServerRoute = {
+  method: 'GET',
+  path: '/contacts',
   options: {
-    description: "Get a contact",
-    notes: "All information must valid",
-    tags: ["api", "contacts"],
+    description: 'Get all contact',
+    notes: 'All information must valid',
+    tags: ['api', 'contacts'],
+    response: {
+      schema: contactListResultValidator
+    },
+    validate: {
+      query: contactListQueryValidator
+    },
     handler: async (
-      hapiRequest: Request,
+      req: IContactListRequest,
       hapiResponse: hapi.ResponseToolkit
     ) => {
-      const contactId = hapiRequest.params.id;
-      const getContactResult = await contactService.get(contactId);
-      return hapiResponse.response(getContactResult);
-    },
-  },
+      const query = req.query;
+      const contactList = await contactService.getContacts(query.name);
+      return hapiResponse.response(contactList).code(StatusCode.OK);
+    }
+  }
 };
 
-const deleteContact: hapi.ServerRoute = {
-  method: "DELETE",
-  path: "/contacts/{id}",
+const getContactDetail: hapi.ServerRoute = {
+  method: 'GET',
+  path: '/contacts/{contactId}',
   options: {
-    description: "Delete a contact",
-    notes: "All information must valid",
-    tags: ["api", "contacts"],
+    description: 'Get contact of customer by contactId',
+    notes: 'contact id must be valid',
+    tags: ['api', 'contacts'],
+    validate: {
+      params: contactIdInputParamValidator
+    },
+    response: {
+      schema: contactGetResultValidator
+    },
     handler: async (
-      hapiRequest: Request,
+      hapiRequest: IGetContactRequest,
       hapiResponse: hapi.ResponseToolkit
     ) => {
-      const contactId = hapiRequest.params.id;
-      await contactService.remove(contactId);
-      return hapiResponse.response().code(204);
+      const contact = await contactService.getContactDetail(
+        hapiRequest.params.contactId
+      );
+      return hapiResponse.response(contact).code(StatusCode.OK);
     },
-  },
+    plugins: {
+      'hapi-swagger': {
+        responses: {
+          [StatusCode.OK]: {
+            description: 'Return contact detail'
+          },
+          [StatusCode.NOT_FOUND]: {
+            description: 'contactId is not found.'
+          }
+        }
+      }
+    }
+  }
 };
+
 const contactController: hapi.ServerRoute[] = [
   createContact,
-  getContact,
-  deleteContact,
+  listContact,
+  getContactDetail
 ];
+
 export default contactController;
