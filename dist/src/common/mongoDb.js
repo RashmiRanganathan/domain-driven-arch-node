@@ -9,11 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.connectMongo = exports.MONGO_HOSTS = exports.MONGO_DB_PASS = exports.MONGO_DB_User = exports.MONGO_DB_NAME = void 0;
 const mongoose_1 = require("mongoose");
-exports.MONGO_HOSTS = "localhost:27017";
-exports.MONGO_DB_NAME = "contact_db";
+exports.MONGO_DB_NAME = "Feb2021Workshop";
+exports.MONGO_DB_User = "Feb2021Workshop";
+exports.MONGO_DB_PASS = "ER9U3HeU0wV5917k";
+exports.MONGO_HOSTS = `dkcuster.o6bij.mongodb.net/${exports.MONGO_DB_NAME}?retryWrites=true&w=majority`;
 const getMongoUri = () => {
-    return `mongodb://${exports.MONGO_HOSTS}/${exports.MONGO_DB_NAME}`;
+    return `mongodb+srv://${exports.MONGO_DB_NAME}:${exports.MONGO_DB_PASS}@${exports.MONGO_HOSTS}`;
 };
 exports.connectMongo = () => __awaiter(void 0, void 0, void 0, function* () {
     const dbUri = getMongoUri();

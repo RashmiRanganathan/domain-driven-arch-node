@@ -1,4 +1,4 @@
 
 # Versions
-Node 10.19.0
+Node 14.9.0
 Hapi 18.4.1
