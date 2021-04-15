@@ -17,11 +17,13 @@ The domains can be of 3 types.
 
 Each domain has a set of supporting files
 examples:
-1. contants - used only within the domain
-2. validator - request - response validation + customer validations
-3. util - helper functions
-4. types - datatypes used between all layers within the domain
-5. model - database model / ORM model
+1. `contants` - used only within the domain
+2. `validator` - request - response validation + customer validations
+3. `util` - helper functions
+4. `types` - datatypes used between all layers within the domain
+5. `model` - database model / ORM model
+
+![image](https://user-images.githubusercontent.com/25193983/114924277-705fe280-9e4b-11eb-9ab2-1f804dbe2c59.png)
 
 ## Folder structure
 
@@ -60,6 +62,7 @@ examples:
 ├── package.json
 ├── package-lock.json
 └── tsconfig.json
+
 ## Versions
 Node 14.9.0     
 Hapi 18.4.1
@@ -78,7 +81,9 @@ How to run test coverage
 `npm run test:cov`
 
 ## Swagger documentation 
-`npm run start`
+`npm run start` && hit `http://localhost:3000/documentation`
+![image](https://user-images.githubusercontent.com/25193983/114924363-88376680-9e4b-11eb-93eb-15913ef6a432.png)
+
 ## Topic covered
 1. Domain Arch
 2. Plugins
