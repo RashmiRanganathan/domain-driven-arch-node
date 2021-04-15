@@ -26,6 +26,7 @@ examples:
 ![image](https://user-images.githubusercontent.com/25193983/114924277-705fe280-9e4b-11eb-9ab2-1f804dbe2c59.png)
 
 ## Folder structure
+```
 
 ├── src
 │   ├── __jest__
@@ -62,6 +63,7 @@ examples:
 ├── package.json
 ├── package-lock.json
 └── tsconfig.json
+```
 
 ## Versions
 Node 14.9.0     
@@ -82,7 +84,9 @@ How to run test coverage
 
 ## Swagger documentation 
 `npm run start` && hit `http://localhost:3000/documentation`
-![image](https://user-images.githubusercontent.com/25193983/114924363-88376680-9e4b-11eb-93eb-15913ef6a432.png)
+
+![image](https://user-images.githubusercontent.com/25193983/114924475-a9985280-9e4b-11eb-84ce-6e0666296ee6.png)
+
 
 ## Topic covered
 1. Domain Arch
